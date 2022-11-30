@@ -1,9 +1,9 @@
 <script lang="ts">
-
+    export let name: String = "unknown";
 </script>
 
 <div>
-    Contestant Name Goes Here
+    {name}
 </div>
 
 <style lang="scss">

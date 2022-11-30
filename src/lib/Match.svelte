@@ -3,8 +3,7 @@
 </script>
 
 <div>
-    <MatchEntry />
-    <MatchEntry />
+    <slot></slot>
 </div>
 
 <style lang="scss">

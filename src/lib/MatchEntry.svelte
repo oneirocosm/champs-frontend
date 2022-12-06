@@ -10,13 +10,15 @@
     div {
         background-color: orangered;
         border-radius: 1.5rem;
-        border-color: black;
+        border: 1px solid black;
         padding: 0.5rem 1rem;
         margin: 0.1rem;
         white-space: nowrap;
 
         &.winner {
             background-color: skyblue;
+            font-weight: bold;
+            border: 2px solid black;
         }
     }
 </style>

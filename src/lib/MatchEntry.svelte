@@ -1,9 +1,9 @@
 <script lang="ts">
-    export let name: String = "unknown";
+    export let entry = {};
 </script>
 
-<div>
-    {name}
+<div class:winner="{entry.is_winner}">
+    {entry.pokemon_name}
 </div>
 
 <style lang="scss">
@@ -14,5 +14,9 @@
         padding: 0.5rem 1rem;
         margin: 0.1rem;
         white-space: nowrap;
+
+        &.winner {
+            background-color: skyblue;
+        }
     }
 </style>

@@ -23,8 +23,9 @@
     </p>
 </footer>
 
-<style lang="scss">
-    :global(:root) {
+<style lang="scss" global>
+    @use "../reset.scss" as *;
+    :root {
         --color-champs-yellow-light: rgb(255,253,172);
         --color-champs-yellow-dark: rgb(255,238,131);
         --color-champs-gray: rgb(150,150,150);
@@ -34,15 +35,20 @@
         --color-primary: var(--color-champs-yellow-dark);
         --color-background: var(--color-champs-gray-light);
     }
-    :global(html) {
+
+    html {
         box-sizing: border-box;
         font-size: 16px;
     }
-    :global(body) {
+
+    body {
 		background-color: var(--color-background);
 		transition: background-color 0.3s;
         font-family: "Montserrat";
 	}
-
+    a {
+        text-decoration: none;
+        color: blue;
+    }
 
 </style>

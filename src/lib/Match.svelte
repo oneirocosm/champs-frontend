@@ -1,5 +1,4 @@
 <script lang="ts">
-    import MatchEntry from '$lib/MatchEntry.svelte';
 </script>
 
 <div>

@@ -1,17 +1,4 @@
-import { Client, Pool } from 'pg';
-import { env } from '$env/dynamic/private';
-import * as fs from 'fs';
-
-const pool = new Pool({
-    user: env.PG_USER,
-    host: env.PG_HOST,
-    database: env.PG_DB,
-    password: env.PG_PASSWORD,
-    port: Number(env.PG_PORT),
-})
-
-const selectPageData = 
-`WITH match_entry_data as (
+WITH match_entry_data as (
     SELECT
         m_entrs.match_id,
         JSON_AGG(JSON_BUILD_OBJECT(
@@ -44,10 +31,4 @@ INNER JOIN match_data
     ON rounds.round_id = match_data.round_id
 ORDER BY rounds.round_id DESC
 )
-SELECT JSON_AGG(round_data) FROM round_data;`;
-
-export async function getPageData() {
-    return pool.query(selectPageData);
-}
-
-export const connectToDb = async () => await pool.connect();
+SELECT JSON_AGG(round_data) FROM round_data;

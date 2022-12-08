@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let entry = {};
+    import type {MatchEntryData} from '$lib/types';
+    export let entry : MatchEntryData;
 </script>
 
 <div class:winner="{entry.is_winner}">

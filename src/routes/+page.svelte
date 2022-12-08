@@ -76,5 +76,7 @@
         width: 90%;
         overflow-x: scroll;
         display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
     }
 </style>

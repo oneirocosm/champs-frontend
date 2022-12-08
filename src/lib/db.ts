@@ -3,11 +3,11 @@ import { env } from '$env/dynamic/private';
 import * as fs from 'fs';
 
 const pool = new Pool({
-    user: env.PG_USER,
-    host: env.PG_HOST,
-    database: env.PG_DB,
-    password: env.PG_PASSWORD,
-    port: Number(env.PG_PORT),
+    user: env.PGUSER,
+    host: env.PGHOST,
+    database: env.PGDATABASE,
+    password: env.PGPASSWORD,
+    port: Number(env.PGPORT),
 })
 
 const selectPageData = 

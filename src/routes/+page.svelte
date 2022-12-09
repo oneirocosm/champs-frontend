@@ -2,10 +2,12 @@
     import MatchEntry from '$lib/MatchEntry.svelte';
     import Match from '$lib/Match.svelte';
     import Round from '$lib/Round.svelte';
+    import { sortMatchesWithin } from '$lib/sorting';
 
 
     export let data;
     let rounds = data.rounds;
+    rounds = sortMatchesWithin(data.rounds);
 </script>
 
 <h2>"WELCOME TO THE BEST IDEA FOR A PODCAST-BASED TOURNAMENT BRACKET WEBSITE OF ALL TIME"</h2>

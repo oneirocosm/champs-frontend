@@ -16,7 +16,8 @@ const selectPageData =
         m_entrs.match_id,
         JSON_AGG(JSON_BUILD_OBJECT(
             'pokemon_name', pkmn.pokemon_name,
-            'is_winner', m_entrs.is_winner
+            'is_winner', m_entrs.is_winner,
+            'is_from_revival', m_entrs.is_from_revival
         )) as match_entry_data
     FROM pokemon pkmn
     INNER JOIN match_entries m_entrs

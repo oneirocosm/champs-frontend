@@ -1,5 +1,3 @@
-
-
 <script>
   export let className = '';
 </script>
@@ -13,9 +11,12 @@
 
 <style lang="scss">
   nav ul {
+    font-size: 1.5rem;
+    margin: 0;
     list-style: none;
     padding: 3px 5px;
-    background: #111;
+    background: var(--color-champs-gray-dark);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
 
     &.alt {
       background: blue;

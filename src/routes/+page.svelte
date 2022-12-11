@@ -74,11 +74,11 @@
     }
 
     .bracket {
-        background-color: lightseagreen;
         width: 90%;
-        overflow-x: scroll;
+        overflow-x: clip;
         display: flex;
         flex-direction: row-reverse;
         justify-content: flex-end;
+        margin: auto;
     }
 </style>

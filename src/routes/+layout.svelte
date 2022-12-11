@@ -32,8 +32,28 @@
         --color-champs-gray-light: rgb(203,203,196);
         --color-champs-gray-dark: rgb(103,103,126);
 
+        --color-sv-green: rgb(0, 163, 127);
+        --color-sv-green-dark: rgb(0, 86, 67);
+        --color-sv-menu-gray: rgb(20, 52, 63);
+        --color-sv-menu-yellow: rgb(251, 204, 0);
+        --color-sv-menu-text-dark: rgb(41, 59, 13);
+        --color-sv-menu-text-light: rgb(240, 255, 255);
+
+        --color-pkmn-red: rgb(249, 55, 12);
+        --color-pkmn-blue: rgb(49, 119, 244);
+        --color-pkmn-green: rgb(0, 196, 11);
+        --color-pkmn-purple: rgb(195, 10, 254);
+
         --color-primary: var(--color-champs-yellow-dark);
         --color-background: var(--color-champs-gray-light);
+        --color-fade: rgb(1, 1, 1);
+
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     html {

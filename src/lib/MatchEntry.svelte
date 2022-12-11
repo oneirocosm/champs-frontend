@@ -9,7 +9,8 @@
 
 <style lang="scss">
     div {
-        background-color: orangered;
+        background-color: var(--color-sv-menu-gray);
+        color: var(--color-sv-menu-text-light);
         border-radius: 1.5rem;
         border: 1px solid black;
         padding: 0.5rem 1rem;
@@ -17,7 +18,8 @@
         white-space: nowrap;
 
         &.winner {
-            background-color: skyblue;
+            background-color: var(--color-sv-menu-yellow);
+            color: var(--color-sv-menu-text-dark);
             font-weight: bold;
             border: 2px solid black;
         }

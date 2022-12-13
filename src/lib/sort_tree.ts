@@ -3,12 +3,14 @@ class SortNode<T> {
     private _smaller: SortNode<T> | null;
     private _larger: SortNode<T> | null;
     private _parent: SortNode<T> | null;
+    private _isRed: boolean;
 
     constructor(content: T) {
         this._content = content;
         this._smaller = null;
         this._larger = null;
         this._parent = null;
+        this._isRed = false;
     }
 
     insertSmaller(newNode: SortNode<T>) {
@@ -148,8 +150,8 @@ export class SortTree<T> {
         }
 
         while(aCurrent !== this._head || bCurrent !== this._head) {
-            let aNext = aCurrent.parent;
-            let bNext = bCurrent.parent;
+            let aNext: SortNode<T> | null = aCurrent.parent;
+            let bNext: SortNode<T> | null = bCurrent.parent;
             if (aNext !== null) {
                 aVisited.add(aNext.content);
             } else {
@@ -176,6 +178,8 @@ export class SortTree<T> {
                     return -1;
                 }
             }
+            aCurrent = aNext;
+            bCurrent = bNext;
         }
 
         throw "Unable to reach shared parent before head.  Tree is improperly formatted";

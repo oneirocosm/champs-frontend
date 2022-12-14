@@ -80,27 +80,18 @@ class SortNode<T> {
                     parent._isRed = false;
                     auncle._isRed = false;
                     grandparent._isRed = true;
-
                     node = grandparent;
+                } else if (node === parent._larger) {
+                    node._note += "L2"
+                    parent.leftRotate();
+                    grandparent.rightRotate();
+                    grandparent._isRed = true;
+                    node._isRed = false;
                 } else {
-                    if (node === parent._larger) {
-                        // this is a confusing step
-                        node._note += "L2"
-                        parent.leftRotate();
-                        grandparent.rightRotate();
-                        grandparent._isRed = true;
-                        node._isRed = false;
-                        return;
-                    } else {
-                        node._note += "L3"
-                    }
-                    if (parent !== null) {
-                        parent._isRed = false;
-                        if (grandparent !== null) {
-                            grandparent._isRed = true;
-                            grandparent.rightRotate();
-                        }
-                    }
+                    node._note += "L3"
+                    parent._isRed = false;
+                    grandparent._isRed = true;
+                    grandparent.rightRotate();
                 }
             } else {
                 const auncle = grandparent._smaller;
@@ -111,24 +102,18 @@ class SortNode<T> {
                     grandparent._isRed = true;
 
                     node = grandparent;
+                } else if (node === parent._smaller) {
+                    node._note += "R2"
+                    parent.rightRotate();
+                    grandparent.leftRotate();
+                    grandparent._isRed = true;
+                    node._isRed = false;
                 } else {
-                    if (node === parent._smaller) {
-                        node._note += "R2"
-                        parent.rightRotate();
-                        grandparent.leftRotate();
-                        grandparent._isRed = true;
-                        node._isRed = false;
-                        return;
-                    } else {
-                        node._note += "R3";
-                    }
-                    if (parent !== null) {
-                        parent._isRed = false;
-                        if (grandparent !== null) {
-                            grandparent._isRed = true;
-                            grandparent.leftRotate();
-                        }
-                    }
+                    node._note += "R3";
+                    parent._isRed = false;
+                    grandparent._isRed = true;
+                    grandparent.leftRotate();
+
                 }
             }
         }

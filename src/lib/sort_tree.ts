@@ -3,7 +3,6 @@ export type DebugNode<T> = {
     parent: T | null;
     childLeft: T | null;
     childRight: T | null;
-    note: string;
 }
 
 class SortNode<T> {
@@ -12,7 +11,6 @@ class SortNode<T> {
     private _larger: SortNode<T> | null;
     private _parent: SortNode<T> | null;
     private _isRed: boolean;
-    private _note: string;
 
     constructor(content: T) {
         this._content = content;
@@ -20,7 +18,6 @@ class SortNode<T> {
         this._larger = null;
         this._parent = null;
         this._isRed = true;
-        this._note = '';
     }
 
     insertSmaller(newNode: SortNode<T>) {
@@ -76,19 +73,16 @@ class SortNode<T> {
             if (grandparent._smaller === parent) {
                 const auncle = grandparent._larger;
                 if (auncle !== null && auncle._isRed) {
-                    node._note += "L1";
                     parent._isRed = false;
                     auncle._isRed = false;
                     grandparent._isRed = true;
                     node = grandparent;
                 } else if (node === parent._larger) {
-                    node._note += "L2"
                     parent.leftRotate();
                     grandparent.rightRotate();
                     grandparent._isRed = true;
                     node._isRed = false;
                 } else {
-                    node._note += "L3"
                     parent._isRed = false;
                     grandparent._isRed = true;
                     grandparent.rightRotate();
@@ -96,20 +90,17 @@ class SortNode<T> {
             } else {
                 const auncle = grandparent._smaller;
                 if (auncle !== null && auncle._isRed) {
-                    node._note += "R1";
                     parent._isRed = false;
                     auncle._isRed = false;
                     grandparent._isRed = true;
 
                     node = grandparent;
                 } else if (node === parent._smaller) {
-                    node._note += "R2"
                     parent.rightRotate();
                     grandparent.leftRotate();
                     grandparent._isRed = true;
                     node._isRed = false;
                 } else {
-                    node._note += "R3";
                     parent._isRed = false;
                     grandparent._isRed = true;
                     grandparent.leftRotate();
@@ -193,7 +184,6 @@ class SortNode<T> {
             parent,
             childLeft,
             childRight,
-            note: this._note,
         };
     }
 

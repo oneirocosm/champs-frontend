@@ -79,9 +79,10 @@ class SortNode<T> {
                     node = grandparent;
                 } else if (node === parent._larger) {
                     parent.leftRotate();
-                    grandparent.rightRotate();
                     grandparent._isRed = true;
                     node._isRed = false;
+                    grandparent.rightRotate();
+                    node = parent;
                 } else {
                     parent._isRed = false;
                     grandparent._isRed = true;
@@ -97,14 +98,14 @@ class SortNode<T> {
                     node = grandparent;
                 } else if (node === parent._smaller) {
                     parent.rightRotate();
-                    grandparent.leftRotate();
                     grandparent._isRed = true;
                     node._isRed = false;
+                    grandparent.leftRotate();
+                    node = parent;
                 } else {
                     parent._isRed = false;
                     grandparent._isRed = true;
                     grandparent.leftRotate();
-
                 }
             }
         }
@@ -364,5 +365,9 @@ export class SortTree<T> {
         }
 
         return debugMap;
+    }
+
+    get root() {
+        return this._head;
     }
 }

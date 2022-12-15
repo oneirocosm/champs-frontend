@@ -1,5 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { SortTree } from '$lib/sort_tree';
+import * as fc from 'fast-check';
+
 import type { DebugNode } from '$lib/sort_tree';
 
 describe("Successive insertLargest calls provide the correct order", () => {
@@ -243,7 +245,7 @@ describe("Comparing two members gives expected results", () => {
     })
 })
 
-describe("Test red/black properties", () => {
+describe("Test red/black tree insertions rotate and color correctly", () => {
     it("Test inserted head", () => {
         const numberTree = new SortTree<number>();
         numberTree.insertLargest(15);
@@ -556,3 +558,121 @@ describe("Test red/black properties", () => {
         expect(numberTree.createDebug()).toStrictEqual(expectedMap);
     })
 })
+
+describe("Property-tests for red/black tree", () => {
+    interface LocalTestContext {
+        createTestTree: (() => fc.Arbitrary<SortTree<number>>);
+    }
+
+    beforeEach<LocalTestContext>(async (context) => {
+        // this must be passed in as a function so it can be
+        // run multiple times with different random values
+        function createTestTree() {
+            const floatBoolTuple = fc.tuple(fc.integer({min: -99, max: 999}), fc.boolean(), fc.integer({min: 0}));
+            const select = (a: [number, boolean, number]) => a[0];
+            //const floatBoolTupleArray = fc.uniqueArray(floatBoolTuple, {minLength: 200, maxLength: 400, selector: select});
+            const floatBoolTupleArray = fc.uniqueArray(floatBoolTuple, {minLength: 10, maxLength: 12, selector: select});
+            return floatBoolTupleArray.map((inputData) => {
+                    const randomTree = new SortTree<number>;
+                    const alreadyUsed = [];
+                    let numAdded = 1;
+                    const first = inputData[0][0];
+                    randomTree.insertLargest(first);
+                    alreadyUsed.push(first);
+                    for (const tuple of inputData.slice(1)) {
+                        const newVal = tuple[0];
+                        const sizeSignifier = tuple[1] ? 'larger' : 'smaller';
+                        const indexAlreadyUsed = tuple[2] % numAdded;
+                        const comparison = alreadyUsed[indexAlreadyUsed];
+                        randomTree.insert(newVal, sizeSignifier, comparison);
+                        alreadyUsed.push(newVal);
+                        numAdded += 1;
+                    }
+                    return randomTree;
+            });
+        }
+
+        context.createTestTree = createTestTree;
+    })
+
+    it<LocalTestContext>("test root node is always black", ({ createTestTree }) => {
+        const testTree = createTestTree();
+        fc.assert(
+            fc.property(testTree, (testTree) => {
+                expect(testTree.root?.createDebugNode().color).toBe('black');
+            })
+        )
+    })
+
+    it<LocalTestContext>("no red node can have a child that is also a red node", ({ createTestTree }) => {
+        const testTree = createTestTree();
+        fc.assert(
+            fc.property(testTree, (testTree) => {
+                let currentNode = testTree.root;
+                const nodeStack = [];
+                console.log(`${JSON.stringify(currentNode?.createDebugNode())}`);
+
+                while (nodeStack.length != 0 || currentNode !== null) {
+                    if (currentNode !== null) {
+                        nodeStack.push(currentNode);
+                        currentNode = currentNode.smaller;
+                    } else {
+                        currentNode = nodeStack.pop() ?? null;
+                        if (currentNode === null) {
+                            throw "Internal error during walk.  This should never be reached";
+                        }
+                        const debugNode = currentNode.createDebugNode();
+                        const leftChild = currentNode.smaller;
+                        const rightChild = currentNode.larger;
+                        if (leftChild !== null) {
+                            const leftDebug = leftChild.createDebugNode();
+                            expect([debugNode.color, leftDebug.color]).toContain('black');
+                        }
+                        if (rightChild !== null) {
+                            const rightDebug = rightChild.createDebugNode();
+                            expect([debugNode.color, rightDebug.color]).toContain('black');
+                        }
+                        currentNode = currentNode.larger;
+                    }
+                }
+            })
+        )
+    })
+
+    it<LocalTestContext>("same number of black nodes for every path from root to leaves", ({ createTestTree }) => {
+        const testTree = createTestTree();
+        fc.assert(
+            fc.property(testTree, (testTree) => {
+                let currentNode = testTree.root;
+                const nodeStack = [];
+                const countStack: Array<number> = [];
+                const countAtLeaves = new Set();
+                console.log(`${JSON.stringify(currentNode?.createDebugNode())}`);
+
+                while (nodeStack.length != 0 || currentNode !== null) {
+                    if (currentNode !== null) {
+                        nodeStack.push(currentNode);
+                        const curVal =  countStack.at(-1) || 0;
+                        if (currentNode.createDebugNode().color == 'black') {
+                            countStack.push(curVal + 1);
+                        } else {
+                            countStack.push(curVal);
+                        }
+                        currentNode = currentNode.smaller;
+                    } else {
+                        currentNode = nodeStack.pop() ?? null;
+                        const curVal = countStack.pop ?? 0;
+                        if (currentNode === null) {
+                            throw "Internal error during walk.  This should never be reached";
+                        }
+                        if (currentNode.smaller === null && currentNode.larger === null) {
+                            countAtLeaves.add(curVal);
+                        }
+                        currentNode = currentNode.larger;
+                    }
+                }
+                expect(countAtLeaves).toHaveLength(1);
+            })
+        )
+    })
+});

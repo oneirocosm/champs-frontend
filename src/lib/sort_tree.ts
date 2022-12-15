@@ -7,33 +7,33 @@ export type DebugNode<T> = {
 
 class SortNode<T> {
     private _content: T;
-    private _smaller: SortNode<T> | null;
-    private _larger: SortNode<T> | null;
+    private _childLeft: SortNode<T> | null;
+    private _childRight: SortNode<T> | null;
     private _parent: SortNode<T> | null;
     private _isRed: boolean;
 
     constructor(content: T) {
         this._content = content;
-        this._smaller = null;
-        this._larger = null;
+        this._childLeft = null;
+        this._childRight = null;
         this._parent = null;
         this._isRed = true;
     }
 
     insertSmaller(newNode: SortNode<T>) {
         let parent: SortNode<T> = this;
-        if (parent._smaller === null) {
-            parent._smaller = newNode;
+        if (parent._childLeft === null) {
+            parent._childLeft = newNode;
             newNode._parent = parent;
             newNode.fixInsertion();
             return;
         } else {
-            parent = parent._smaller;
+            parent = parent._childLeft;
         }
-        while (parent._larger !== null) {
-            parent = parent._larger;
+        while (parent._childRight !== null) {
+            parent = parent._childRight;
         }
-        parent._larger = newNode;
+        parent._childRight = newNode;
         newNode._parent = parent;
 
         newNode.fixInsertion();
@@ -41,18 +41,18 @@ class SortNode<T> {
 
     insertLarger(newNode: SortNode<T>) {
         let parent: SortNode<T> = this;
-        if (parent._larger === null) {
-            parent._larger = newNode;
+        if (parent._childRight === null) {
+            parent._childRight = newNode;
             newNode._parent = parent;
             newNode.fixInsertion();
             return;
         } else {
-            parent = parent._larger;
+            parent = parent._childRight;
         }
-        while (parent._smaller !== null) {
-            parent = parent._smaller;
+        while (parent._childLeft !== null) {
+            parent = parent._childLeft;
         }
-        parent._smaller = newNode;
+        parent._childLeft = newNode;
         newNode._parent = parent;
 
         newNode.fixInsertion();
@@ -70,14 +70,14 @@ class SortNode<T> {
                 throw `It should be impossible for ${parent._content} to be root and red`;
             }
 
-            if (grandparent._smaller === parent) {
-                const auncle = grandparent._larger;
+            if (grandparent._childLeft === parent) {
+                const auncle = grandparent._childRight;
                 if (auncle !== null && auncle._isRed) {
                     parent._isRed = false;
                     auncle._isRed = false;
                     grandparent._isRed = true;
                     node = grandparent;
-                } else if (node === parent._larger) {
+                } else if (node === parent._childRight) {
                     parent.leftRotate();
                     grandparent._isRed = true;
                     node._isRed = false;
@@ -89,14 +89,14 @@ class SortNode<T> {
                     grandparent.rightRotate();
                 }
             } else {
-                const auncle = grandparent._smaller;
+                const auncle = grandparent._childLeft;
                 if (auncle !== null && auncle._isRed) {
                     parent._isRed = false;
                     auncle._isRed = false;
                     grandparent._isRed = true;
 
                     node = grandparent;
-                } else if (node === parent._smaller) {
+                } else if (node === parent._childLeft) {
                     parent.rightRotate();
                     grandparent._isRed = true;
                     node._isRed = false;
@@ -112,60 +112,60 @@ class SortNode<T> {
     }
 
     leftRotate() {
-        if (this._larger === null) {
+        if (this._childRight === null) {
             throw `Cannot perform left rotation on ${this._content} as its larger child is null`;
         }
 
         const originalParent = this._parent;
-        const originalLarger = this._larger;
-        const originalGrandchild = this._larger._smaller;
+        const originalLarger = this._childRight;
+        const originalGrandchild = this._childRight._childLeft;
 
         originalLarger._parent = originalParent;
         if (originalParent !== null) {
-            if (originalParent._smaller === this) {
-                originalParent._smaller = originalLarger;
+            if (originalParent._childLeft === this) {
+                originalParent._childLeft = originalLarger;
             } else {
-                originalParent._larger = originalLarger;
+                originalParent._childRight = originalLarger;
             }
         }
 
         this._parent = originalLarger;
-        originalLarger._smaller = this;
+        originalLarger._childLeft = this;
 
-        this._larger = originalGrandchild;
+        this._childRight = originalGrandchild;
         if (originalGrandchild != null) {
             originalGrandchild._parent = this;
         }
     }
 
     rightRotate() {
-        if (this._smaller === null) {
+        if (this._childLeft === null) {
             throw `Cannot perform left rotation on ${this._content} as its larger child is null`;
         }
 
         const originalParent = this._parent;
-        const originalSmaller = this._smaller;
-        const originalGrandchild = this._smaller._larger;
+        const originalSmaller = this._childLeft;
+        const originalGrandchild = this._childLeft._childRight;
 
         originalSmaller._parent = originalParent;
         if (originalParent !== null) {
-            if (originalParent._smaller === this) {
-                originalParent._smaller = originalSmaller;
+            if (originalParent._childLeft === this) {
+                originalParent._childLeft = originalSmaller;
             } else {
-                originalParent._larger = originalSmaller;
+                originalParent._childRight = originalSmaller;
             }
         }
 
         this._parent = originalSmaller;
-        originalSmaller._larger = this;
+        originalSmaller._childRight = this;
 
-        this._smaller = originalGrandchild;
+        this._childLeft = originalGrandchild;
         if (originalGrandchild != null) {
             originalGrandchild._parent = this;
         }
     }
 
-    updateHead(): SortNode<T> {
+    updateRoot(): SortNode<T> {
         let node: SortNode<T> = this;
         while (node.parent != null) {
             node = node.parent;
@@ -177,8 +177,8 @@ class SortNode<T> {
     createDebugNode(): DebugNode<T> {
         const color = this._isRed ? 'red' : 'black';
         const parent = this._parent === null ? null : this._parent._content;
-        const childLeft = this._smaller === null ? null : this._smaller._content;
-        const childRight = this._larger === null ? null : this._larger._content;
+        const childLeft = this._childLeft === null ? null : this._childLeft._content;
+        const childRight = this._childRight === null ? null : this._childRight._content;
 
         return {
             color,
@@ -192,12 +192,12 @@ class SortNode<T> {
         return this._content;
     }
 
-    get smaller() {
-        return this._smaller;
+    get childLeft() {
+        return this._childLeft;
     }
 
-    get larger() {
-        return this._larger;
+    get childRight() {
+        return this._childRight;
     }
 
     get parent() {
@@ -207,38 +207,38 @@ class SortNode<T> {
 
 
 export class SortTree<T> {
-    private _head: SortNode<T> | null;
+    private _root: SortNode<T> | null;
     private _largest: SortNode<T> | null;
     private _nodeMap: Map<T, SortNode<T>>;
 
     constructor() {
-        this._head = null;
+        this._root = null;
         this._largest = null;
         this._nodeMap = new Map;
     }
 
     insertLargest(item: T) {
-        if (this._head === null) {
+        if (this._root === null) {
             const newNode = new SortNode(item);
-            this._head = newNode;
+            this._root = newNode;
             this._largest = newNode;
-            this._head = this._head.updateHead();
+            this._root = this._root.updateRoot();
             this._nodeMap.set(item, newNode);
         } else {
             const newLargest = new SortNode(item);
             this._largest?.insertLarger(newLargest);
             this._largest = newLargest;
             this._nodeMap.set(item, newLargest);
-            this._head = this._head.updateHead();
+            this._root = this._root.updateRoot();
         }
     }
 
     insert(item: T, comparitor: string, compared: T) {
-        if (this._head === null) {
+        if (this._root === null) {
             const newNode = new SortNode(item);
-            this._head = newNode;
+            this._root = newNode;
             this._largest = newNode;
-            this._head = this._head.updateHead();
+            this._root = this._root.updateRoot();
             this._nodeMap.set(item, newNode);
             return;
         }
@@ -250,12 +250,12 @@ export class SortTree<T> {
         if (comparitor == "smaller") {
             const newNode = new SortNode(item);
             reference.insertSmaller(newNode)
-            this._head = this._head.updateHead();
+            this._root = this._root.updateRoot();
             this._nodeMap.set(item, newNode);
         } else if (comparitor == "larger") {
             const newNode = new SortNode(item);
             reference.insertLarger(newNode)
-            this._head = this._head.updateHead();
+            this._root = this._root.updateRoot();
             this._nodeMap.set(item, newNode);
             if (reference === this._largest) {
                 this._largest = newNode;
@@ -270,20 +270,19 @@ export class SortTree<T> {
         let index = 0;
         const orderMap = new Map<T, number>;
         const nodeStack = [];
-        let currentNode = this._head;
+        let currentNode = this._root;
         while (nodeStack.length != 0 || currentNode !== null) {
             if (currentNode !== null) {
                 nodeStack.push(currentNode);
-                currentNode = currentNode.smaller;
+                currentNode = currentNode.childLeft;
             } else {
                 currentNode = nodeStack.pop() ?? null;
                 if (currentNode === null) {
                     throw "Internal error during walk.  This should never be reached";
-                } else {
-                    orderMap.set(currentNode.content, index);
-                    index += 1;
                 }
-                currentNode = currentNode.larger;
+                orderMap.set(currentNode.content, index);
+                index += 1;
+                currentNode = currentNode.childRight;
             }
         }
 
@@ -310,7 +309,7 @@ export class SortTree<T> {
             throw `There is no node with the name ${b}.  Unable to search.`;
         }
 
-        while(aCurrent !== this._head || bCurrent !== this._head) {
+        while(aCurrent !== this._root || bCurrent !== this._root) {
             let aNext: SortNode<T> | null = aCurrent.parent;
             let bNext: SortNode<T> | null = bCurrent.parent;
             if (aNext !== null) {
@@ -325,7 +324,7 @@ export class SortTree<T> {
             }
 
             if (bVisited.has(aNext.content)) {
-                if (aNext.smaller === aCurrent) {
+                if (aNext.childLeft === aCurrent) {
                     return -1;
                 } else {
                     return 1;
@@ -333,7 +332,7 @@ export class SortTree<T> {
             }
 
             if (aVisited.has(bNext.content)) {
-                if (bNext.smaller === bCurrent) {
+                if (bNext.childLeft === bCurrent) {
                     return 1;
                 } else {
                     return -1;
@@ -348,11 +347,11 @@ export class SortTree<T> {
     createDebug(): Map<T, DebugNode<T>> {
         const debugMap = new Map<T, DebugNode<T>>;
         const nodeStack = [];
-        let currentNode = this._head;
+        let currentNode = this._root;
         while (nodeStack.length != 0 || currentNode !== null) {
             if (currentNode !== null) {
                 nodeStack.push(currentNode);
-                currentNode = currentNode.smaller;
+                currentNode = currentNode.childLeft;
             } else {
                 currentNode = nodeStack.pop() ?? null;
                 if (currentNode === null) {
@@ -360,7 +359,7 @@ export class SortTree<T> {
                 } else {
                     debugMap.set(currentNode.content, currentNode.createDebugNode());
                 }
-                currentNode = currentNode.larger;
+                currentNode = currentNode.childRight;
             }
         }
 
@@ -368,6 +367,6 @@ export class SortTree<T> {
     }
 
     get root() {
-        return this._head;
+        return this._root;
     }
 }

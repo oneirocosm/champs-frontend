@@ -565,8 +565,8 @@ describe("Property-tests for red/black tree", () => {
     }
 
     beforeEach<LocalTestContext>(async (context) => {
-        // this must be passed in as a function so it can be
-        // run multiple times with different random values
+        // this must be passed in as a function so fast-check can
+        // run it multiple times with different random values
         function createTestTree() {
             const floatBoolTuple = fc.tuple(fc.integer({min: -99, max: 999}), fc.boolean(), fc.integer({min: 0}));
             const select = (a: [number, boolean, number]) => a[0];
@@ -615,15 +615,15 @@ describe("Property-tests for red/black tree", () => {
                 while (nodeStack.length != 0 || currentNode !== null) {
                     if (currentNode !== null) {
                         nodeStack.push(currentNode);
-                        currentNode = currentNode.smaller;
+                        currentNode = currentNode.childLeft;
                     } else {
                         currentNode = nodeStack.pop() ?? null;
                         if (currentNode === null) {
                             throw "Internal error during walk.  This should never be reached";
                         }
                         const debugNode = currentNode.createDebugNode();
-                        const leftChild = currentNode.smaller;
-                        const rightChild = currentNode.larger;
+                        const leftChild = currentNode.childLeft;
+                        const rightChild = currentNode.childRight;
                         if (leftChild !== null) {
                             const leftDebug = leftChild.createDebugNode();
                             expect([debugNode.color, leftDebug.color]).toContain('black');
@@ -632,7 +632,7 @@ describe("Property-tests for red/black tree", () => {
                             const rightDebug = rightChild.createDebugNode();
                             expect([debugNode.color, rightDebug.color]).toContain('black');
                         }
-                        currentNode = currentNode.larger;
+                        currentNode = currentNode.childRight;
                     }
                 }
             })
@@ -658,17 +658,17 @@ describe("Property-tests for red/black tree", () => {
                         } else {
                             countStack.push(curVal);
                         }
-                        currentNode = currentNode.smaller;
+                        currentNode = currentNode.childLeft;
                     } else {
                         currentNode = nodeStack.pop() ?? null;
                         const curVal = countStack.pop ?? 0;
                         if (currentNode === null) {
                             throw "Internal error during walk.  This should never be reached";
                         }
-                        if (currentNode.smaller === null && currentNode.larger === null) {
+                        if (currentNode.childLeft === null && currentNode.childRight === null) {
                             countAtLeaves.add(curVal);
                         }
-                        currentNode = currentNode.larger;
+                        currentNode = currentNode.childRight;
                     }
                 }
                 expect(countAtLeaves).toHaveLength(1);

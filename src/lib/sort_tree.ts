@@ -265,7 +265,6 @@ export class SortTree<T> {
         }
     }
 
-
     createOrderMap(): Map<T, number> {
         let index = 0;
         const orderMap = new Map<T, number>;
@@ -301,12 +300,15 @@ export class SortTree<T> {
         let aCurrent = this._nodeMap.get(a);
         let bCurrent = this._nodeMap.get(b);
 
-        if (aCurrent === undefined) {
-            throw `There is no node with the name ${a}.  Unable to search.`;
-        }
-
-        if (bCurrent === undefined) {
-            throw `There is no node with the name ${b}.  Unable to search.`;
+        if (aCurrent === undefined && bCurrent !== undefined) {
+            // a does not exist but b does, so b is smaller
+            return 1;
+        } else if (aCurrent !== undefined && bCurrent === undefined) {
+            // b does not exist but a does, so a is smaller
+            return -1;
+        } else if (aCurrent === undefined && bCurrent === undefined) {
+            // neither exists, so they are the same size
+            return 0;
         }
 
         while(aCurrent !== this._root || bCurrent !== this._root) {
@@ -342,6 +344,15 @@ export class SortTree<T> {
             bCurrent = bNext;
         }
         throw "Unable to reach shared parent before head.  Tree is improperly formatted";
+    }
+
+    min(a: T, b: T): T {
+        const comparison = this.compare(a, b);
+        if (comparison === 1) {
+            return b;
+        } else {
+            return a;
+        }
     }
 
     createDebug(): Map<T, DebugNode<T>> {

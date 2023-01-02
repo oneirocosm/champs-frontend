@@ -17,7 +17,8 @@ const selectPageData =
         JSON_AGG(JSON_BUILD_OBJECT(
             'pokemon_name', pkmn.pokemon_name,
             'is_winner', m_entrs.is_winner,
-            'is_from_revival', m_entrs.is_from_revival
+            'is_from_revival', m_entrs.is_from_revival,
+            'match_entry_id', m_entrs.match_entry_id
         )) as match_entry_data
     FROM pokemon pkmn
     INNER JOIN match_entries m_entrs
@@ -47,8 +48,27 @@ ORDER BY rounds.round_id DESC
 )
 SELECT JSON_AGG(round_data) FROM round_data;`;
 
+const selectPairs = 
+`WITH round_entries AS
+(
+    SELECT matches.round_id, entries.pokemon_id, entries.match_entry_id, entries.is_from_revival
+    FROM match_entries entries
+    INNER JOIN matches
+    ON entries.match_id = matches.match_id
+)
+SELECT JSONB_AGG(JSONB_BUILD_OBJECT(
+    'linkStart', curr.match_entry_id,
+    'linkEnd', nxt.match_entry_id))
+FROM round_entries curr
+INNER JOIN round_entries nxt
+ON curr.round_id + 1 = nxt.round_id AND curr.pokemon_id = nxt.pokemon_id AND NOT nxt.is_from_revival;`;
+
 export async function getPageData() {
     return pool.query(selectPageData);
+}
+
+export async function getPairData() {
+    return pool.query(selectPairs);
 }
 
 export const connectToDb = async () => await pool.connect();

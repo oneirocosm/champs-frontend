@@ -2,11 +2,26 @@
     import MatchEntry from '$lib/MatchEntry.svelte';
     import Match from '$lib/Match.svelte';
     import Round from '$lib/Round.svelte';
+    import Link from '$lib/Link.svelte';
     import { sortMatchesWithin } from '$lib/sorting';
-
+    import type {LinkData, PairData, RoundData, MatchData, MatchEntryData} from '$lib/types';
 
     export let data;
     let rounds = data.rounds;
+    /*
+    const entryHandles: EntryHandle = data.rounds.matches.reduce((acc: EntryHandle, match: MatchData) => {
+        return match.match_entry_data.reduce((acc: EntryHandle, entry: MatchEntryData) => {
+            acc.set(entry.pokemon_name, entry);
+            return acc;
+        }, acc);
+    }, new Map());
+    */
+    const entryPairs: Array<LinkData> = data.pairs.map((entry: PairData) => {
+        return {
+            startHandle: `entry${entry.linkStart}`,
+            endHandle: `entry${entry.linkEnd}`,
+        }
+    });
     rounds = sortMatchesWithin(data.rounds);
 </script>
 
@@ -14,7 +29,6 @@
 <h1>
     CHAMPS IN <br />THE MAKING
 </h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <div class="bracket">
     {#each rounds as round}
@@ -27,6 +41,9 @@
                 </Match>
             {/each}
         </Round>
+    {/each}
+    {#each entryPairs as entryPair}
+        <Link linkData={entryPair}/>
     {/each}
 </div>
 

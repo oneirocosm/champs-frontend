@@ -20,6 +20,7 @@
         border-top-right-radius: inherit;
         padding-top: 1rem;
         border-bottom: 3px solid black;
+        z-index: 5;
     }
 
     .round {
